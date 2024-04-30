@@ -2,33 +2,23 @@ package logger
 
 import (
 	"encoding/json"
+	"sync"
 
+	"github.com/nvg14/logit/pkg/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-func NewCommonLogger(moduleName, logLevel, productID, environment, application string, initialFields map[string]interface{}) *zap.SugaredLogger {
-	var rawJSON = []byte(`{
-		"level": "` + logLevel + `",
-		"encoding": "json",
-		"encoderConfig": {
-			"levelKey": "level",
-			"messageKey": "message",
-			"levelEncoder": "lowercase",
-			"nameKey":"name",
-			"stacktraceKey":"stack"
-		}
-	}`)
+var once sync.Once
 
-	config := setUpConfig(moduleName, rawJSON, initialFields)
-	config.OutputPaths = []string{"stdout"}
-	config.ErrorOutputPaths = []string{"stdout"}
-	logit, _ := config.Build()
-
-	return logit.Sugar()
+func NewSugaredLogger(moduleName, logLevel, productID, environment, application string, initialFields map[string]interface{}) *zap.SugaredLogger {
+	initialFields["product"] = productID
+	initialFields["environment"] = environment
+	initialFields["application"] = application
+	return NewZapLogger(moduleName, logLevel, initialFields).Sugar()
 }
 
-func NewFastLogger(moduleName, logLevel string, initialFields map[string]interface{}) *zap.Logger {
+func NewZapLogger(moduleName, logLevel string, initialFields map[string]interface{}) *zap.Logger {
 	var rawJSON = []byte(`{
 		"level": "` + logLevel + `",
 		"encoding": "json",
@@ -44,9 +34,9 @@ func NewFastLogger(moduleName, logLevel string, initialFields map[string]interfa
 	config := setUpConfig(moduleName, rawJSON, initialFields)
 	config.OutputPaths = []string{"stdout"}
 	config.ErrorOutputPaths = []string{"stdout"}
-	logit, _ := config.Build()
+	zapLogger, _ := config.Build()
 
-	return logit
+	return zapLogger
 }
 
 func setUpConfig(moduleName string, rawJSON []byte, initialFields map[string]interface{}) (config zap.Config) {
@@ -61,4 +51,20 @@ func setUpConfig(moduleName string, rawJSON []byte, initialFields map[string]int
 		config.InitialFields[k] = v
 	}
 	return config
+}
+
+func init() {
+	once.Do(func() {
+		zapLogger := NewZapLogger(
+			utils.GetEnvWithDefault("MODULE_NAME", "fabric"),
+			utils.GetEnvWithDefault("LOG_LEVEL", "info"),
+			map[string]interface{}{
+				"product":     utils.GetEnvWithDefault("PRODUCT_ID", "fabric"),
+				"environment": utils.GetEnvWithDefault("Stack", "jammer-dev"),
+				"application": utils.GetEnvWithDefault("APPLICATION", "master"),
+			},
+		)
+		defer zapLogger.Sync()
+		intializeLogAdapter(zapLogger.Sugar())
+	})
 }
