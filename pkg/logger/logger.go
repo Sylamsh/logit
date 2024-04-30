@@ -11,10 +11,16 @@ import (
 
 var once sync.Once
 
+const (
+	KEY_PRODUCT_ID       = "product"
+	KEY_ENVIRONMENT      = "environment"
+	KEY_APPLICATION_NAME = "application"
+)
+
 func NewSugaredLogger(moduleName, logLevel, productID, environment, application string, initialFields map[string]interface{}) *zap.SugaredLogger {
-	initialFields["product"] = productID
-	initialFields["environment"] = environment
-	initialFields["application"] = application
+	initialFields[KEY_PRODUCT_ID] = productID
+	initialFields[KEY_ENVIRONMENT] = environment
+	initialFields[KEY_APPLICATION_NAME] = application
 	return NewZapLogger(moduleName, logLevel, initialFields).Sugar()
 }
 
@@ -59,9 +65,9 @@ func init() {
 			utils.GetEnvWithDefault("MODULE_NAME", "fabric"),
 			utils.GetEnvWithDefault("LOG_LEVEL", "info"),
 			map[string]interface{}{
-				"product":     utils.GetEnvWithDefault("PRODUCT_ID", "fabric"),
-				"environment": utils.GetEnvWithDefault("Stack", "jammer-dev"),
-				"application": utils.GetEnvWithDefault("APPLICATION_NAME", "master"),
+				KEY_PRODUCT_ID:       utils.GetEnvWithDefault("PRODUCT_ID", "fabric"),
+				KEY_ENVIRONMENT:      utils.GetEnvWithDefault("Stack", "jammer-dev"),
+				KEY_APPLICATION_NAME: utils.GetEnvWithDefault("APPLICATION_NAME", "master"),
 			},
 		)
 		defer zapLogger.Sync()
