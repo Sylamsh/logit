@@ -61,7 +61,7 @@ func init() {
 			map[string]interface{}{
 				"product":     utils.GetEnvWithDefault("PRODUCT_ID", "fabric"),
 				"environment": utils.GetEnvWithDefault("Stack", "jammer-dev"),
-				"application": utils.GetEnvWithDefault("APPLICATION", "master"),
+				"application": utils.GetEnvWithDefault("APPLICATION_NAME", "master"),
 			},
 		)
 		defer zapLogger.Sync()
