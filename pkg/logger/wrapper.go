@@ -8,16 +8,16 @@ type CommonLogAdapter struct {
 	commonLogger *zap.SugaredLogger
 }
 
-var commonLogger CommonLogAdapter
+var commonLogAdapter CommonLogAdapter
 
 func intializeLogAdapter(logger *zap.SugaredLogger) {
-	commonLogger = CommonLogAdapter{
+	commonLogAdapter = CommonLogAdapter{
 		commonLogger: logger.WithOptions(zap.AddCallerSkip(1), zap.AddStacktrace(zap.ErrorLevel)),
 	}
 }
 
 func GetCommonLogger() *CommonLogAdapter {
-	return &commonLogger
+	return &commonLogAdapter
 }
 
 func addKeyVals(activity, event string, otherKeyVals ...any) []any {
@@ -31,68 +31,68 @@ func addKeyVals(activity, event string, otherKeyVals ...any) []any {
 	return keyVals
 }
 
-func (log *CommonLogAdapter) Debug(msg string, keyvals ...any) {
-	log.commonLogger.Debugf(msg, keyvals...)
+func (adapter *CommonLogAdapter) Debug(msg string, keyvals ...any) {
+	adapter.commonLogger.Debugf(msg, keyvals...)
 }
 
-func (log *CommonLogAdapter) Info(msg string, keyvals ...any) {
-	log.commonLogger.Infof(msg, keyvals...)
+func (adapter *CommonLogAdapter) Info(msg string, keyvals ...any) {
+	adapter.commonLogger.Infof(msg, keyvals...)
 }
 
-func (log *CommonLogAdapter) Warn(msg string, keyvals ...any) {
-	log.commonLogger.Warnf(msg, keyvals...)
+func (adapter *CommonLogAdapter) Warn(msg string, keyvals ...any) {
+	adapter.commonLogger.Warnf(msg, keyvals...)
 }
 
-func (log *CommonLogAdapter) Error(msg string, keyvals ...any) {
-	log.commonLogger.Errorf(msg, keyvals...)
+func (adapter *CommonLogAdapter) Error(msg string, keyvals ...any) {
+	adapter.commonLogger.Errorf(msg, keyvals...)
 }
 
-func (log *CommonLogAdapter) Debugw(message string, activity string, event string, otherKeyVals ...any) {
+func (adapter *CommonLogAdapter) Debugw(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	log.commonLogger.Debugw(message, keyVals...)
+	adapter.commonLogger.Debugw(message, keyVals...)
 }
 
-func (log *CommonLogAdapter) Infow(message string, activity string, event string, otherKeyVals ...any) {
+func (adapter *CommonLogAdapter) Infow(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	log.commonLogger.Infow(message, keyVals...)
+	adapter.commonLogger.Infow(message, keyVals...)
 }
 
-func (log *CommonLogAdapter) Warnw(message string, activity string, event string, otherKeyVals ...any) {
+func (adapter *CommonLogAdapter) Warnw(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	log.commonLogger.Warnw(message, keyVals...)
+	adapter.commonLogger.Warnw(message, keyVals...)
 }
 
-func (log *CommonLogAdapter) Errorw(message string, activity string, event string, otherKeyVals ...any) {
+func (adapter *CommonLogAdapter) Errorw(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	log.commonLogger.Errorw(message, keyVals...)
+	adapter.commonLogger.Errorw(message, keyVals...)
 }
 
-func (log *CommonLogAdapter) Fatalw(message string, activity string, event string, otherKeyVals ...any) {
+func (adapter *CommonLogAdapter) Fatalw(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	log.commonLogger.Fatalw(message, keyVals...)
+	adapter.commonLogger.Fatalw(message, keyVals...)
 }
 
 func Debug(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	commonLogger.commonLogger.Debugw(message, keyVals...)
+	commonLogAdapter.commonLogger.Debugw(message, keyVals...)
 }
 
 func Info(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	commonLogger.commonLogger.Infow(message, keyVals...)
+	commonLogAdapter.commonLogger.Infow(message, keyVals...)
 }
 
 func Warn(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	commonLogger.commonLogger.Warnw(message, keyVals...)
+	commonLogAdapter.commonLogger.Warnw(message, keyVals...)
 }
 
 func Error(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	commonLogger.commonLogger.Errorw(message, keyVals...)
+	commonLogAdapter.commonLogger.Errorw(message, keyVals...)
 }
 
 func Fatal(message string, activity string, event string, otherKeyVals ...any) {
 	keyVals := addKeyVals(activity, event, otherKeyVals...)
-	commonLogger.commonLogger.Fatalw(message, keyVals...)
+	commonLogAdapter.commonLogger.Fatalw(message, keyVals...)
 }
